@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>鴉啼之塔 | Dragonbane</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Crimson+Pro:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+
+    <style>
+        /* --- 1. 基礎設定 --- */
+        :root {
+            --obsidian: #05070a; /* 更偏冷色調的黑 */
+            --raven: #2c3e50;    /* 渡鴉羽毛的深藍灰 */
+            --mist: #7f8c8d;     /* 迷霧灰 */
+            --gold: #d4af37;
+            --gold-bright: #f4d078;
+            --gold-glow: rgba(212, 175, 55, 0.5);
+            --text-light: #e0e0e0;
+            --text-dim: #a0a0a0;
+        }
+
+        body {
+            margin: 0; padding: 0;
+            background-color: var(--obsidian);
+            /* 背景紋理改為類似石磚或迷霧的感覺 */
+            background-image: radial-gradient(circle at 50% 50%, transparent 20%, #000 90%), url('https://www.transparenttextures.com/patterns/black-felt.png'); 
+            background-repeat: repeat; background-attachment: fixed;
+            color: var(--text-light);
+            font-family: 'Crimson Pro', serif;
+            font-size: 1rem; line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        h1, h2, h3, .char-name, header h1, .modal-title {
+            font-family: 'Cinzel', serif; letter-spacing: 0.1em; text-transform: uppercase; font-weight: 700; margin: 0;
+        }
+
+        /* 技能標籤 */
+        .skill-tag-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .skill-tag {
+            display: inline-flex;
+            justify-content: flex-start; 
+            align-items: center;
+            flex-shrink: 0;
+            padding: 6px 12px; 
+            font-family: 'Cinzel', serif;
+            font-size: 0.9rem;
+            letter-spacing: 1px;
+            font-weight: bold;
+            background: linear-gradient(135deg, #1a252f, #0a1015);
+            color: #ccc;
+            border: 1px solid #34495e;
+            border-radius: 2px;
+            cursor: default;
+            transition: all 0.3s;
+            box-shadow: 2px 2px 5px rgba(0,0,0,0.5);
+        }
+
+        .skill-tag::before {
+            content: '◆';
+            color: var(--gold);
+            font-size: 0.6rem;
+            margin-right: 8px; 
+            opacity: 0.8;
+        }
+
+        .skill-tag:hover {
+            border-color: var(--gold);
+            color: #fff;
+            background: linear-gradient(135deg, #3a2a00, #221a00);
+            box-shadow: 0 0 10px rgba(212, 175, 55, 0.4);
+            transform: translateY(-2px);
+        }
+
+        /* 背景故事排版 */
+        .detail-row { display: flex; align-items: flex-start; margin-bottom: 12px; line-height: 1.7; }
+        .detail-content { flex: 1; padding-top: 2px; }
+
+        /* 內文高亮標籤 */
+        .inline-tag {
+            flex-shrink: 0; display: inline-block; width: 100px; text-align: center;
+            font-family: 'Cinzel', serif; font-size: 0.85rem; font-weight: 700; color: var(--gold-bright);
+            background: linear-gradient(180deg, rgba(30, 30, 30, 0.9), rgba(10, 10, 10, 0.8));
+            border: 1px solid var(--gold); border-radius: 2px; padding: 2px 0; margin-right: 15px; margin-top: 3px;
+            text-shadow: 0 1px 2px black; box-shadow: 0 0 5px rgba(212, 175, 55, 0.15);
+        }
+        .inline-tag.weakness { border-color: #5e3434; color: #ffcccc; background: linear-gradient(180deg, rgba(60, 20, 20, 0.9), rgba(30, 10, 10, 0.8)); }
+
+        /* 簡約儀式金線 */
+        .divider-container { display: flex; align-items: center; justify-content: center; width: 60%; margin: 30px auto; opacity: 0.9; }
+        .divider-line { flex: 1; height: 1px; background: linear-gradient(90deg, transparent, var(--gold)); box-shadow: 0 0 5px var(--gold-glow); }
+        .divider-line:last-child { background: linear-gradient(90deg, var(--gold), transparent); }
+        .divider-gem { color: var(--gold-bright); font-size: 14px; padding: 0 15px; text-shadow: 0 0 10px var(--gold); background: transparent; }
+
+        /* Header */
+        header {
+            min-height: 100vh; padding: 80px 20px;
+            /* 背景圖建議換成古塔或迷霧山谷 */
+            background: linear-gradient(to bottom, rgba(5,7,10,0.6), rgba(5,7,10,0.4), var(--obsidian)), url('images/tower_bg.webp');
+            background-size: cover; background-position: center bottom; background-attachment: scroll;
+            display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;
+            border-bottom: 4px solid var(--raven); position: relative; z-index: 2; overflow: hidden;
+        }
+        header::after { content: ''; position: absolute; inset: 0; background: radial-gradient(circle at center, transparent 30%, #000 100%); pointer-events: none; z-index: 1; }
+
+        /* 特效 */
+        .sweeping-light { position: absolute; top: -20%; left: -50%; width: 200%; height: 150%; background: conic-gradient(from 180deg at 50% 0%, transparent 150deg, rgba(255, 215, 0, 0.1) 170deg, rgba(255, 255, 255, 0.3) 180deg, rgba(255, 215, 0, 0.1) 190deg, transparent 210deg); filter: blur(60px); mix-blend-mode: screen; animation: light-sweep 15s infinite ease-in-out alternate; pointer-events: none; z-index: 2; opacity: 0.8; }
+        @keyframes light-sweep { 0% { transform: rotate(-25deg); } 100% { transform: rotate(25deg); } }
+        
+        .fire-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 5; }
+        .fire-source { position: absolute; bottom: 22%; width: 80px; height: 120px; } .left-fire { left: 15%; } .right-fire { right: 15%; }
+        .flame-container { width: 100%; height: 100%; position: absolute; bottom: 0; transform-origin: center bottom; filter: blur(4px) contrast(1.2); }
+        .flame { position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); border-radius: 50% 50% 20% 20%; transform-origin: center bottom; opacity: 0.8; mix-blend-mode: screen; }
+        .flame.red { width: 100%; height: 100%; background: linear-gradient(to top, #4a1c1c, transparent); animation: burn 1.5s infinite ease-in-out alternate; }
+        .flame.orange { width: 80%; height: 85%; background: linear-gradient(to top, #854e18, transparent); animation: burn 1.2s infinite ease-in-out alternate-reverse; }
+        .flame.gold { width: 60%; height: 70%; background: linear-gradient(to top, #d4af37, transparent); animation: burn 1s infinite ease-in-out alternate; }
+        .flame.white { width: 40%; height: 50%; background: linear-gradient(to top, #ffffff, transparent); animation: flicker 0.2s infinite ease-in-out alternate; box-shadow: 0 0 20px #ffaa00; }
+        @keyframes burn { 0% { transform: translateX(-50%) scale(1) skewX(-2deg); opacity: 0.8; } 50% { transform: translateX(-50%) scale(1.1, 1.05) skewX(2deg); opacity: 0.9; } 100% { transform: translateX(-50%) scale(0.95, 1.1) skewX(-1deg); opacity: 0.7; } }
+        @keyframes flicker { 0% { transform: translateX(-50%) scale(1); opacity: 0.9; } 100% { transform: translateX(-50%) scale(1.05, 1.1); opacity: 1; } }
+
+        /* 標題與文字 */
+        header h1 { font-size: 4rem; margin-bottom: 15px; color: var(--gold-bright); letter-spacing: 0.05em; text-shadow: 0 2px 0px #3a2a00, 0 5px 10px rgba(0,0,0,0.5), 0 0 30px var(--gold-glow); position: relative; z-index: 10; }
+        header p.subtitle { font-family: 'Cinzel', serif; position: relative; z-index: 10; font-size: 1.1rem; color: var(--gold); letter-spacing: 2px; text-shadow: 0 2px 5px black; opacity: 0.9; }
+        
+        .header-story-box { background: linear-gradient(135deg, rgba(10,12,15,0.9), rgba(20,24,30,0.95)); border: 1px solid #444; border-top: 2px solid var(--gold); border-bottom: 2px solid var(--gold); outline: 1px solid rgba(0,0,0,0.5); outline-offset: -5px; box-shadow: 0 20px 60px rgba(0,0,0,1), inset 0 0 50px rgba(0,0,0,0.8); backdrop-filter: blur(8px); padding: 40px 50px; max-width: 850px; margin-top: 40px; position: relative; z-index: 10; transition: all 0.5s ease; }
+        .header-story-box:hover { box-shadow: 0 0 40px rgba(44, 62, 80, 0.5); border-color: var(--raven); }
+        .story-text { font-size: 1.15rem; color: #ccc; margin-bottom: 20px; text-align: justify; text-align-last: center; }
+        .story-highlight { color: var(--gold); font-weight: bold; }
+        .story-omen { color: #a4b0be; font-style: italic; border-left: 3px solid var(--raven); padding-left: 15px; margin-top: 20px; display: block; }
+
+        /* 導覽列 */
+        .nav-container { position: absolute; bottom: 0; width: 100%; display: flex; justify-content: center; gap: 0; background: linear-gradient(to top, rgba(0,0,0,0.9), transparent); z-index: 20; }
+        .nav-btn { background: rgba(5, 7, 10, 0.8); border: none; border-bottom: 3px solid transparent; color: var(--text-dim); font-family: 'Cinzel', serif; font-size: 1.2rem; padding: 15px 40px; cursor: pointer; transition: all 0.3s; position: relative; flex: 1; max-width: 300px; }
+        .nav-btn:hover { color: var(--gold); background: rgba(20, 30, 40, 0.9); }
+        .nav-btn.active { color: var(--gold-bright); background: linear-gradient(to top, rgba(212, 175, 55, 0.1), transparent); border-bottom: 3px solid var(--gold); text-shadow: 0 0 10px var(--gold-glow); }
+
+        /* 內容容器 */
+        .content-wrapper { position: relative; z-index: 10; min-height: 80vh; background: var(--obsidian); }
+        .tab-content { display: none; opacity: 0; transition: opacity 0.5s ease; animation: fadeIn 0.5s forwards; }
+        .tab-content.active { display: block; opacity: 1; }
+
+        /* Lore Tab */
+        .lore-section { padding: 40px 20px; background: linear-gradient(to bottom, var(--obsidian), #0f1215 50%, var(--obsidian)), url('https://www.transparenttextures.com/patterns/dark-matter.png'); position: relative; z-index: 2; }
+        .lore-container { max-width: 1000px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 40px; align-items: start; }
+        .lore-title-group { text-align: center; grid-column: 1 / -1; margin-bottom: 40px; }
+        .lore-main-title { font-size: 2.5rem; color: var(--gold); margin-bottom: 10px; text-shadow: 0 0 20px rgba(212, 175, 55, 0.4); }
+        .lore-sub-title { font-family: 'Crimson Pro', serif; font-size: 1.2rem; color: #ccc; font-style: italic; letter-spacing: 1px; }
+        .lore-box { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(212, 175, 55, 0.2); padding: 30px; position: relative; transition: all 0.3s ease; height: 100%; box-sizing: border-box; }
+        .lore-box:hover { border-color: var(--gold); background: rgba(255, 255, 255, 0.05); box-shadow: 0 0 30px rgba(0,0,0,0.8); }
+        .lore-box::before { content: ''; position: absolute; top: -1px; left: -1px; width: 20px; height: 20px; border-top: 3px solid var(--gold); border-left: 3px solid var(--gold); }
+        .lore-box::after { content: ''; position: absolute; bottom: -1px; right: -1px; width: 20px; height: 20px; border-bottom: 3px solid var(--gold); border-right: 3px solid var(--gold); }
+        .lore-h3 { font-family: 'Cinzel', serif; color: #d4af37; font-size: 1.4rem; margin-bottom: 15px; border-bottom: 1px solid rgba(212, 175, 55, 0.3); padding-bottom: 8px; }
+        .lore-text { color: #ccc; font-size: 1rem; line-height: 1.7; margin-bottom: 10px; text-align: justify; }
+        .lore-highlight { color: #81ecec; font-weight: bold; }
+        .lore-quote { grid-column: 1 / -1; text-align: center; font-size: 1.3rem; color: var(--gold-bright); font-family: 'Cinzel', serif; margin-top: 20px; padding: 25px; border-top: 1px solid rgba(212, 175, 55, 0.3); border-bottom: 1px solid rgba(212, 175, 55, 0.3); background: linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.05), transparent); }
+
+        /* Char Tab */
+        .char-intro-section { text-align: center; padding: 40px 20px 20px 20px; background-color: var(--obsidian); position: relative; z-index: 2; margin-bottom: -1px; }
+        .char-intro-title { font-family: 'Cinzel', serif; font-size: 2.8rem; color: var(--gold-bright); margin-bottom: 5px; text-shadow: 0 2px 10px rgba(0,0,0,0.8); }
+        .char-intro-subtitle { font-family: 'Cinzel', serif; font-size: 1rem; color: var(--gold); letter-spacing: 3px; opacity: 0.8; }
+        .char-intro-desc { font-family: 'Crimson Pro', serif; font-size: 1.1rem; color: #888; max-width: 600px; margin: 0 auto; }
+        .accordion-section { padding: 0; background: #000; overflow: hidden; position: relative; z-index: 2; border-top: 2px solid var(--gold); box-shadow: 0 -20px 50px rgba(0,0,0,1); }
+        .accordion-container { display: flex; width: 100%; height: 75vh; min-height: 500px; }
+        .acc-card { position: relative; flex: 1; height: 100%; cursor: pointer; transition: flex 0.6s cubic-bezier(0.25, 1, 0.5, 1), filter 0.4s; border-right: 1px solid rgba(0,0,0,0.5); filter: grayscale(80%) brightness(0.6); overflow: hidden; }
+        .acc-card:last-child { border-right: none; }
+        .acc-card::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-image: var(--char-img); background-size: cover; background-position: center; filter: blur(20px) brightness(0.4); z-index: 0; }
+        .acc-card::after { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-image: var(--char-img); background-size: cover; background-position: top center; background-repeat: no-repeat; z-index: 1; }
+        .acc-card:hover { flex: 4; filter: grayscale(0%) brightness(1.1); }
+        .accordion-container:hover .acc-card:not(:hover) { filter: grayscale(100%) brightness(0.4); }
+        .acc-overlay { position: absolute; bottom: 0; left: 0; width: 100%; padding: 40px 20px; background: linear-gradient(to top, rgba(0,0,0,0.95), rgba(0,0,0,0)); opacity: 0; transform: translateY(20px); transition: all 0.4s ease 0.1s; text-align: center; z-index: 2; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; }
+        .acc-card:hover .acc-overlay { opacity: 1; transform: translateY(0); }
+        .acc-title { font-family: 'Cinzel', serif; font-size: 2.5rem; color: var(--gold); text-shadow: 0 4px 10px rgba(0,0,0,0.9); margin-bottom: 5px; white-space: nowrap; }
+        .acc-role { font-size: 1rem; color: #ccc; font-style: italic; display: inline-block; margin-bottom: 15px; border-bottom: 1px solid var(--raven); padding-bottom: 5px; }
+        .acc-quote { font-family: 'Crimson Pro', serif; font-size: 0.95rem; color: #aaa; font-style: italic; max-width: 80%; line-height: 1.4; margin-top: 5px; display: none; border-left: 2px solid var(--gold); padding-left: 10px; text-align: left; }
+        .acc-card:hover .acc-quote { display: block; animation: fadeIn 0.8s; }
+
+        @media (max-width: 1024px) { header h1 { font-size: 2.5rem; } .lore-container { grid-template-columns: 1fr; gap: 30px; } .accordion-container { flex-direction: row; overflow-x: auto; scroll-snap-type: x mandatory; height: 500px; } .acc-card { flex: 0 0 85vw; scroll-snap-align: center; filter: grayscale(0%) brightness(0.9); border-right: none; margin-right: 10px; } .acc-card::after { background-size: cover; background-position: center 20%; } .acc-overlay { opacity: 1; transform: translateY(0); background: linear-gradient(to top, rgba(0,0,0,0.9), transparent); } .acc-title { font-size: 2rem; } .acc-card:hover { flex: 0 0 85vw; } }
+
+        /* Footer */
+        footer { background: black; padding: 40px 20px; text-align: center; color: var(--text-dim); font-size: 0.8rem; border-top: 2px solid var(--raven); position: relative; z-index: 2; }
+        .cta-btn { margin-top: 15px; display: inline-block; padding: 12px 35px; border: 2px solid var(--gold); color: var(--gold); text-decoration: none; background: linear-gradient(45deg, transparent 5%, rgba(212, 175, 55, 0.1) 5%); font-size: 1.1rem; font-family: 'Cinzel', serif; cursor: pointer; transition: 0.3s; letter-spacing: 2px; position: relative; overflow: hidden; box-shadow: 0 0 10px rgba(0,0,0,0.5); }
+        .cta-btn:hover { background-color: var(--gold); color: var(--obsidian); box-shadow: 0 0 25px var(--gold-glow); }
+
+        /* --- MODAL STYLES --- */
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.95); z-index: 1000; justify-content: center; align-items: center; opacity: 0; transition: opacity 0.3s ease; backdrop-filter: blur(5px); }
+        .modal-overlay.active { display: flex; opacity: 1; }
+        .modal-content { background: #0f1215; border: 2px solid var(--gold); width: 90%; max-width: 1100px; height: 85vh; display: flex; flex-direction: column; position: relative; box-shadow: 0 0 60px rgba(212, 175, 55, 0.2); overflow: hidden; animation: slideUp 0.4s ease-out; }
+        .close-btn { position: absolute; top: 15px; right: 25px; font-size: 40px; color: var(--text-dim); cursor: pointer; z-index: 10; line-height: 0.5; transition: 0.2s; } .close-btn:hover { color: var(--gold); transform: rotate(90deg); }
+        .modal-grid { display: flex; flex-direction: row; height: 100%; }
+        .modal-image-col { flex: 1; background-color: #000; min-height: 400px; position: relative; overflow: hidden; }
+        .modal-image-placeholder { width: 100%; height: 100%; background-size: cover; background-position: top center; transition: transform 10s ease; }
+        .modal-overlay.active .modal-image-placeholder { transform: scale(1.1); }
+        
+        .modal-info-col { flex: 1.2; padding: 50px; overflow-y: auto; background: linear-gradient(to bottom, rgba(0,0,0,0.2), rgba(0,0,0,0.8)), url('https://www.transparenttextures.com/patterns/black-felt.png'), linear-gradient(135deg, #0e161b 0%, #151e24 100%); scrollbar-width: thin; scrollbar-color: var(--gold) #222; }
+        .modal-info-col::-webkit-scrollbar { width: 8px; } .modal-info-col::-webkit-scrollbar-track { background: #111; } .modal-info-col::-webkit-scrollbar-thumb { background-color: var(--gold); border-radius: 4px; }
+        
+        .char-header-plate { text-align: center; margin-bottom: 25px; padding: 20px; border: 1px solid var(--gold); border-left: none; border-right: none; background: linear-gradient(90deg, transparent 0%, rgba(0,0,0,0.6) 50%, transparent 100%); position: relative; }
+        .char-header-plate::before { content: '❖'; font-size: 1.5rem; color: var(--gold); position: absolute; top: 50%; left: 10px; transform: translateY(-50%); }
+        .char-header-plate::after { content: '❖'; font-size: 1.5rem; color: var(--gold); position: absolute; top: 50%; right: 10px; transform: translateY(-50%); }
+        .modal-title { font-size: 3.2rem; margin: 0; display: block; background: linear-gradient(to bottom, #fff5c2 20%, #d4af37 80%); -webkit-background-clip: text; background-clip: text; color: transparent; filter: drop-shadow(0 2px 0px #3a2a00); position: relative; z-index: 2; }
+        .title-glow { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 200px; height: 200px; background: radial-gradient(circle, rgba(212, 175, 55, 0.2) 0%, transparent 70%); pointer-events: none; z-index: 1; }
+        .modal-subtitle { font-size: 1.2rem; color: #dcbfa3; font-style: italic; margin-top: 5px; font-family: 'Crimson Pro', serif; letter-spacing: 1px; }
+        
+        .modal-stats-box { padding: 0 0 10px 0; background: transparent; border: none; }
+        .stats-container { display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px; margin: 25px 0; width: 100%; box-sizing: border-box; }
+        .stat-glyph { background: linear-gradient(180deg, rgba(0,0,0,0.5) 0%, rgba(20,30,40,0.6) 100%); border: 1px solid #34495e; border-bottom: 3px solid #5d6d7e; border-radius: 4px; padding: 15px 5px; text-align: center; position: relative; transition: all 0.3s; cursor: default; overflow: hidden; }
+        .stat-name { display: block; font-family: 'Cinzel', serif; font-size: 0.8rem; color: #aaa; letter-spacing: 1px; margin-bottom: 5px; transition: color 0.3s; }
+        .stat-value { display: block; font-family: 'Cinzel', serif; font-size: 1.8rem; font-weight: 700; color: #e0e0e0; text-shadow: 2px 2px 0px rgba(0,0,0,0.5); transition: all 0.3s; }
+        .stat-glyph:hover { transform: translateY(-5px); background: linear-gradient(180deg, #222 0%, #3a2a00 100%); border-color: var(--gold); border-bottom-color: var(--gold); box-shadow: 0 5px 15px rgba(212, 175, 55, 0.3); }
+        .stat-glyph:hover .stat-name { color: var(--gold); } .stat-glyph:hover .stat-value { color: #fff; text-shadow: 0 0 10px var(--gold); transform: scale(1.1); }
+        .stat-glyph::after { content: attr(data-label); position: absolute; bottom: 0; left: 0; width: 100%; font-size: 0.6rem; color: #000; background-color: var(--gold); padding: 2px 0; transform: translateY(100%); transition: transform 0.3s; font-weight: bold; font-family: 'sans-serif'; }
+        .stat-glyph:hover::after { transform: translateY(0); }
+        .styled-h3 { color: var(--gold); font-family: 'Cinzel', serif; font-size: 1.1rem; margin-top: 30px; margin-bottom: 15px; padding-bottom: 5px; border-bottom: 1px solid rgba(212, 175, 55, 0.3); letter-spacing: 1px; text-shadow: 0 0 5px rgba(212, 175, 55, 0.2); opacity: 0.9; }
+        .modal-text-content p { color: #e0e0e0; font-size: 1.05rem; margin-bottom: 15px; line-height: 1.8; text-shadow: 1px 1px 2px rgba(0,0,0,0.5); }
+        .ability-btn { width: 100%; padding: 12px 18px; font-family: 'Cinzel', serif; font-size: 1rem; font-weight: bold; color: #d0d0d0; background: linear-gradient(90deg, #1a252f, #0a1015); border: 1px solid #34495e; border-left: 3px solid #5d6d7e; cursor: pointer; position: relative; overflow: hidden; text-align: left; display: flex; justify-content: space-between; align-items: center; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        .ability-btn:hover, .ability-btn.active { color: var(--gold); border-color: var(--gold); border-left-color: var(--gold); background: linear-gradient(90deg, rgba(212, 175, 55, 0.1), transparent); box-shadow: 0 0 15px rgba(212, 175, 55, 0.15); padding-left: 25px; }
+        .ability-btn::before { content: '✦'; position: absolute; left: 5px; top: 50%; transform: translateY(-50%) scale(0); color: var(--gold); transition: all 0.3s; }
+        .ability-btn:hover::before, .ability-btn.active::before { transform: translateY(-50%) scale(1); }
+        .ability-indicator { font-size: 1.2rem; transition: transform 0.3s; color: #666; }
+        .ability-btn:hover .ability-indicator { color: var(--gold); }
+        .ability-btn.active .ability-indicator { transform: rotate(45deg); color: var(--gold); }
+        .ability-content { max-height: 0; overflow: hidden; background: rgba(0, 0, 0, 0.3); border-left: 2px solid rgba(212, 175, 55, 0.3); margin-left: 10px; transition: max-height 0.4s ease-out, opacity 0.4s ease; opacity: 0; }
+        .ability-content p { padding: 15px; margin: 0; color: #ccc; font-size: 0.95rem; font-style: normal; }
+        .ability-content.active { max-height: 600px; opacity: 1; }
+        
+       /* --- 修改後的裝備欄 (純文字版) --- */
+        .gear-container { 
+            display: grid; 
+            grid-template-columns: 1fr; 
+            gap: 15px; 
+            width: 100%; 
+            margin-bottom: 30px; 
+        }
+        
+        /* 在電腦版顯示雙欄，手機版單欄 */
+        @media (min-width: 768px) {
+            .gear-container { grid-template-columns: 1fr 1fr; }
+        }
+
+        .gear-text-card {
+            background: linear-gradient(135deg, rgba(20, 30, 40, 0.4), rgba(10, 15, 20, 0.6));
+            border: 1px solid #34495e;
+            border-left: 3px solid var(--gold); /* 金色左邊框呼應設計語言 */
+            padding: 15px 20px;
+            border-radius: 2px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .gear-text-card:hover {
+            background: linear-gradient(135deg, rgba(212, 175, 55, 0.1), transparent);
+            border-color: var(--gold);
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+        }
+
+        .gear-name-text {
+            font-family: 'Cinzel', serif;
+            font-size: 1.1rem;
+            color: var(--gold);
+            margin-bottom: 8px;
+            font-weight: bold;
+            letter-spacing: 1px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            padding-bottom: 5px;
+            display: block;
+        }
+
+        .gear-desc-text {
+            font-family: 'Crimson Pro', serif;
+            font-size: 1rem;
+            color: #ccc;
+            line-height: 1.5;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="fixed-background"></div>
+    <canvas id="dustCanvas" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; opacity: 0.6;"></canvas>
+
+    <header>
+        <div class="sweeping-light"></div>
+
+        <div class="fire-overlay">
+            <div class="fire-source left-fire">
+                <div class="flame-container"><div class="flame red"></div><div class="flame orange"></div><div class="flame gold"></div><div class="flame white"></div></div>
+            </div>
+            <div class="fire-source right-fire">
+                <div class="flame-container"><div class="flame red"></div><div class="flame orange"></div><div class="flame gold"></div><div class="flame white"></div></div>
+            </div>
+        </div>
+
+        <p style="letter-spacing: 3px; font-size: 0.8rem; color: var(--text-dim); position: relative; z-index: 10;">Dragonbane | 迷霧山谷序章</p>
+        <h1 style="position: relative; z-index: 10;">鴉啼之塔</h1>
+        <p class="subtitle">The Croaking Tower</p>
+        
+        <div class="divider-container">
+            <div class="divider-line"></div><div class="divider-gem">◆</div><div class="divider-line"></div>
+        </div>
+        
+ <div class="header-story-box">
+            <p class="story-text">
+                在庫默爾山脈的南端，德拉克馬山口之前，矗立著一座被遺忘的古塔。
+                人們稱之為<span class="story-highlight">鴉啼之塔</span>。
+            </p>
+            <p class="story-text">
+               它是昔日巨龍帝國留下的遺跡，孤獨地守望著通往迷霧山谷的古道。
+                如今，艾默瑞斯騎士發出了一份委託——
+               前往這座廢棄的高塔，取回一枚失落已久的護身符。
+            </p>
+            <div class="story-omen">
+                看似簡單的任務，卻伴隨著詭異的傳聞。
+                旅行者說，塔的周圍迴盪著不祥的嘶啞鳴叫，
+                彷彿連風中都夾雜著來自遠古的警告……
+            </div>
+        </div>
+
+        <div class="nav-container">
+            <button class="nav-btn active" onclick="switchTab('lore', this)">傳說背景</button>
+            <button class="nav-btn" onclick="switchTab('chars', this)">冒險隊伍</button>
+        </div>
+    </header>
+
+    <div class="content-wrapper">
+        
+ <div id="tab-lore" class="tab-content active">
+            <section class="lore-section">
+                <div class="lore-container">
+                    <div class="lore-title-group">
+                        <h2 class="lore-main-title">帝國的餘燼</h2>
+                        <p class="lore-sub-title">Echoes of the Dragon Empire</p>
+                        <div class="divider-container" style="width: 20%;"><div class="divider-line"></div><div class="divider-gem">◆</div><div class="divider-line"></div></div>
+                    </div>
+
+                    <div class="lore-box">
+                        <h3 class="lore-h3">失落的巨龍帝國</h3>
+                        <p class="lore-text">
+                            在久遠的過去，迷霧山谷曾由巨龍帝國的龍皇<strong style="color:var(--gold);">埃勒丹 (Eledain)</strong> 統治。那是傳說中的黃金時代，巨龍並非野獸，而是帝國的守護者與盟友。騎士們騎乘著巨龍翱翔天際，魔法與鋼鐵共同鑄造了無上的輝煌。
+                        </p>
+                        <p class="lore-text">
+                            然而，帝國因未知的黑暗而崩塌，埃勒丹的血脈斷絕，曾經的榮耀化為廢墟。世界陷入混亂，而帝國的核心領土則被一層無法穿越的魔法迷霧所吞噬。
+                        </p>
+                    </div>
+
+                    <div class="lore-box">
+                        <h3 class="lore-h3">迷霧山谷的呼喚</h3>
+                        <p class="lore-text">
+                            數百年來，<span class="lore-highlight">迷霧山谷 (The Misty Vale)</span> 一直是地圖上的禁地。傳說那裡埋藏著巨龍帝國最後的寶藏、強大的神器，以及關於帝國隕落的真相。
+                        </p>
+                        <p class="lore-text">
+                            如今，籠罩山谷的迷霧開始變得不穩定，通往內部的路徑隱約浮現。來自世界各地的冒險者、尋寶獵人和流亡者紛紛聚集於此，渴望在這片危險與機遇並存的土地上，刻下自己的傳奇。
+                        </p>
+                    </div>
+
+                    <div class="lore-box" style="grid-column: 1 / -1;">
+                        <h3 class="lore-h3">守望者：鴉啼之塔</h3>
+                        <p class="lore-text">
+                            在庫默爾山脈的陰影下，矗立著一座帝國時代的遺跡——<strong>鴉啼之塔</strong>。它曾是守望德拉克馬山口的要塞，如今卻被藤蔓與歲月侵蝕。
+                        </p>
+                        <p class="lore-text">
+                            艾默瑞斯騎士相信，這座塔中遺留著一把「鑰匙」或是一件信物，那是深入迷霧山谷不可或缺的憑證。對於你們這群渴望進入山谷的冒險者來說，征服這座古塔，不僅是為了騎士的賞金，更是踏入傳說的第一步試煉。
+                        </p>
+                    </div>
+
+                    <div class="lore-quote">
+                        「迷霧不會寬恕弱者。在挑戰山谷之前，先證明你們有資格跨過它的門檻。」
+                        <br>
+                        <span style="font-size: 0.9rem; color: #888; font-family: 'Crimson Pro', serif; margin-top:10px; display:block;">—— 郊外村的老兵</span>
+                    </div>
+
+                </div>
+            </section>
+        </div>
+
+        <div id="tab-chars" class="tab-content">
+            <div class="char-intro-section">
+                <h2 class="char-intro-title">冒險隊伍</h2>
+                <p class="char-intro-subtitle">The Party</p>
+                <div class="divider-container" style="width: 15%; margin: 15px auto;"><div class="divider-line"></div><div class="divider-gem">◆</div><div class="divider-line"></div></div>
+                <p class="char-intro-desc">
+                    七位懷抱不同目的冒險者，命運將他們匯聚於古塔之下。
+                </p>
+            </div>
+
+            <section class="accordion-section">
+                <div class="accordion-container">
+                    <div class="acc-card" onclick="openModal('aodhan')" style="--char-img: url('images/aodhan.webp');">
+                        <div class="acc-overlay">
+                            <h3 class="acc-title">奧丹大師</h3>
+                            <span class="acc-role">人類元素法師</span>
+                            <p class="acc-quote">「我雖然老了，膽子也小，但我的火焰可是非常年輕且狂野的。」</p>
+                        </div>
+                    </div>
+                    <div class="acc-card" onclick="openModal('orla')" style="--char-img: url('images/orla.webp');">
+                        <div class="acc-overlay">
+                            <h3 class="acc-title">奧拉．月銀</h3>
+                            <span class="acc-role">精靈獵人</span>
+                            <p class="acc-quote">「我的箭矢不會猶豫，就像我尋找命運的決心一樣。」</p>
+                        </div>
+                    </div>
+                    <div class="acc-card" onclick="openModal('makander')" style="--char-img: url('images/makander.webp');">
+                        <div class="acc-overlay">
+                            <h3 class="acc-title">半灣的瑪坎德</h3>
+                            <span class="acc-role">鴨人騎士</span>
+                            <p class="acc-quote">「嘎！誰敢嘲笑我的身高，我就敲碎誰的膝蓋！」</p>
+                        </div>
+                    </div>
+                    <div class="acc-card" onclick="openModal('bastonn')" style="--char-img: url('images/bastonn.webp');">
+                        <div class="acc-overlay">
+                            <h3 class="acc-title">巴斯托恩．血顎</h3>
+                            <span class="acc-role">狼人戰士</span>
+                            <p class="acc-quote">「我聞到了... 不是恐懼，是晚餐的味道。」</p>
+                        </div>
+                    </div>
+                    <div class="acc-card" onclick="openModal('krisanna')" style="--char-img: url('images/krisanna.webp');">
+                        <div class="acc-overlay">
+                            <h3 class="acc-title">大膽的克莉桑納</h3>
+                            <span class="acc-role">半身人盜賊</span>
+                            <p class="acc-quote">「什麼叫偷？這叫『提前借用』，而且我通常不還。」</p>
+                        </div>
+                    </div>
+                    <div class="acc-card" onclick="openModal('alberic')" style="--char-img: url('images/alberic.webp');">
+                        <div class="acc-overlay">
+                            <h3 class="acc-title">奧貝里克．亮心</h3>
+                            <span class="acc-role">矮人商人</span>
+                            <p class="acc-quote">「每一塊石頭都有價值，只要你懂得怎麼賣。」</p>
+                        </div>
+                    </div>
+                     <div class="acc-card" onclick="openModal('betrix')" style="--char-img: url('images/betrix.webp');">
+                        <div class="acc-overlay">
+                            <h3 class="acc-title">貝崔絲．遠帆船長</h3>
+                            <span class="acc-role">人類水手</span>
+                            <p class="acc-quote">「陸地只是暫時的停靠點，我的靈魂屬於大海。」</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+    </div>
+
+    <footer>
+        <a href="#" class="cta-btn">開始冒險</a>
+        <br><br><br>
+        <p>&copy; 2025 The Croaking Tower. Powered by Dragonbane System.</p>
+    </footer>
+
+    <div id="charModal" class="modal-overlay" onclick="closeModal(event)">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <span class="close-btn" onclick="closeModal(event)">&times;</span>
+            <div class="modal-grid">
+                <div class="modal-image-col"><div id="modalImage" class="modal-image-placeholder"></div></div>
+                <div class="modal-info-col">
+                    <div class="char-header-plate">
+                        <div class="title-glow"></div>
+                        <h2 id="modalName" class="modal-title">CHARACTER NAME</h2>
+                        <p id="modalRole" class="modal-subtitle">Class & Role</p>
+                    </div>
+                    <div class="modal-stats-box">
+                        <div class="stats-container">
+                            <div class="stat-glyph" data-label="力量 STR"><span class="stat-name">STR</span><span class="stat-value" id="statSTR">0</span></div>
+                            <div class="stat-glyph" data-label="體質 CON"><span class="stat-name">CON</span><span class="stat-value" id="statCON">0</span></div>
+                            <div class="stat-glyph" data-label="敏捷 AGL"><span class="stat-name">AGL</span><span class="stat-value" id="statAGL">0</span></div>
+                            <div class="stat-glyph" data-label="智力 INT"><span class="stat-name">INT</span><span class="stat-value" id="statINT">0</span></div>
+                            <div class="stat-glyph" data-label="意志 WIL"><span class="stat-name">WIL</span><span class="stat-value" id="statWIL">0</span></div>
+                            <div class="stat-glyph" data-label="魅力 CHA"><span class="stat-name">CHA</span><span class="stat-value" id="statCHA">0</span></div>
+                        </div>
+                    </div>
+                    <div class="modal-text-content">
+                        <h3 class="styled-h3">個人特質</h3><div id="backstoryContainer" class="abilities-list"></div>
+                        <h3 class="styled-h3">擅長技能</h3><div id="modalSkills" class="skill-tag-container"></div>
+                        <h3 class="styled-h3">英雄能力</h3><div id="heroAbilitiesContainer" class="abilities-list"></div>
+                        <h3 class="styled-h3">初始裝備</h3><div id="modalGearContainer" class="gear-container"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<script>
+    function switchTab(tabId, btn) {
+        document.querySelectorAll('.tab-content').forEach(el => {
+            el.classList.remove('active');
+            el.style.opacity = 0;
+            setTimeout(() => { if(!el.classList.contains('active')) el.style.display = 'none'; }, 500);
+        });
+        const target = document.getElementById('tab-' + tabId);
+        target.style.display = 'block';
+        setTimeout(() => { target.classList.add('active'); target.style.opacity = 1; }, 10);
+        document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+    }
+
+    /* --- Dragonbane 角色數據庫 --- */
+    const characters = {
+        aodhan: {
+            name: "奧丹大師", role: "人類元素法師 (Archmaster Aodhan)", image: "images/aodhan.webp",
+            stats: { STR: 8, CON: 11, AGL: 9, INT: 16, WIL: 18, CHA: 14 },
+            backstory: [
+                { name: "弱點：怯懦", desc: "你總是待在隊伍的最後面。雖然魔法強大，但肉體凡胎讓你對受傷感到恐懼。<br><strong>扮演參考：</strong>遇到危險時，先找掩護，再搓火球。" },
+                { name: "背景：被燒毀的穀倉", desc: "你從小你就對火焰非常著迷。在意外燒毀家庭農場後，具有魔法天賦的母親將你送進魔法學院。在那裡，你學會了魔法的奧祕，但你仍然渴望更深層的知識。如今，在經過數年旅行後，你加入了一支探險隊，出發前往迷霧之谷。" }
+            ],
+            skills: ["元素流派", "祕聞傳說", "語言", "察覺", "求生", "調查", "醫療", "野獸知識"],
+            heroAbilities: [
+                { name: "通權達變", desc: "進行技能檢定時，你可以選擇用另一個技能代替原本的技能進行檢定。<br>你必須能合理化解釋為何使用該替代技能。GM 擁有最終裁定權。" },
+                { name: "直覺思考", desc: "當面臨困難抉擇時，你可以發動此能力，直接詢問 GM 一個問題，並得到一個有用的答案。" },
+                { name: "火球術", desc: "一道火球從你的手掌或法器射向目標，造成 2D6 火焰傷害，並點燃可燃物體。" },
+                { name: "石柱術", desc: "此法術會從地面或石造地板升起一根 3 米高、1 米寬的石柱。若有人站在該地點，他必須進行體操檢定（不需動作），失敗會從石柱上摔下來。" },
+                { name: "強風術", desc: "此法術會創造一陣強風。效果區域內所有人類大小的未固定物體和生物都會被推離 2D4 米，並受到相同數值的傷害。此法術在對抗集群時會造成 2D6 傷害。" }
+            ],
+            gear: [
+                { name: "長棍(法杖)", icon: "images/staff.webp", desc: "一根看起來像枯枝的法杖，但蘊含魔力。" },
+                { name: "魔導書", icon: "images/book.webp", desc: "寫滿了咒語與筆記，是你最珍貴的財產。" }
+            ]
+        },
+        orla: {
+            name: "奧拉·月銀", role: "精靈獵人 (Orla Moonsilver)", image: "images/orla.webp",
+            stats: { STR: 13, CON: 15, AGL: 17, INT: 13, WIL: 10, CHA: 9 },
+            backstory: [
+                { name: "弱點：偏執", desc: "你堅信夜裔（如歐克、哥布林）是邪惡的，必須被消滅。<br><strong>扮演提示：</strong>對非自然或黑暗生物表現出明顯的不信任與敵意。" },
+                { name: "背景：尋找宿命", desc: "你在南方的熱帶雨林長大，總是渴望冒險，但也明白家族對紀律和反思的重視。某天，一隻巨魔襲擊了你的村莊，殺害了你的族人。此後，你決定為自己尋找新的未來和命運。於是你與一群同伴踏上旅程，前往迷霧之谷，看看那裡會帶來什麼機會。" }
+            ],
+            skills: ["弓", "察覺", "閃避", "狩獵", "體操", "小刀"],
+            heroAbilities: [
+                { name: "心如止水", desc: "精靈可以在短休時進行深度冥想。可以額外多恢復 1D6 HP 和 1D6 WP，並可額外消除一個狀態。<br>冥想期間你對外界完全無反應。" },
+                { name: "無畏", desc: "你在抵抗恐懼的意志檢定獲得 1 個優勢。" },
+                { name: "雙重射擊", desc: "使用弓箭攻擊時，你可以一次射出兩支箭。只進行一次命中檢定（帶劣勢），若命中則分開計算兩次傷害。" }
+            ],
+            gear: [
+                { name: "長弓", icon: "images/longbow.webp", desc: "一把優雅的精靈長弓，射程極遠。" },
+                { name: "小刀", icon: "images/quiver.webp", desc: "近戰投擲兩相宜。" }
+            ]
+        },
+        makander: {
+            name: "半灣的瑪坎德", role: "鴨人騎士 (Makander of Halfbay)", image: "images/makander.webp",
+            stats: { STR: 16, CON: 16, AGL: 10, INT: 12, WIL: 14, CHA: 13 },
+            backstory: [
+                { name: "弱點：魯莽", desc: "你總是第一個衝進危險之中。<br><strong>扮演提示：</strong>思考？那是法師的事。看到敵人，衝就對了！" },
+                { name: "背景：次子的榮耀", desc: "你是半灣男爵最小的兒子，父親的宅邸位於遙遠的東方。爵位將由兄長繼承，因此你決定走出自己的道路。你仍對家族的名譽和榮耀感到驕傲，經常幫助弱者、懲罰邪惡。如今，你加入了一支探險隊，被迷霧之谷的傳說和寶藏所吸引。" }
+            ],
+            skills: ["劍", "斧", "徒手", "祕聞傳說", "遊說", "表演"],
+            heroAbilities: [
+                { name: "脾氣暴躁", desc: "鴨人的脾氣出了名的差。進行技能檢定時，你可以主動激怒自己（獲得「憤怒」狀態），並使該次檢定獲得優勢。" },
+                { name: "蹼足", desc: "在游泳檢定上獲得優勢，且在水中移動速度不減。" },
+                { name: "守護者", desc: "若你和盟友都在敵人附近，你可以強迫敵人攻擊你而不是你的盟友。" },
+                { name: "堅強防禦", desc: "你可以在不消耗該輪動作的情況下嘗試格擋一次攻擊。" }
+            ],
+            gear: [
+                { name: "板甲", icon: "images/plate.webp", desc: "量身定做的重型盔甲，防禦力極高。" },
+                { name: "戰斧", icon: "images/shield_sun.webp", desc: "你的好戰友，誰惹你不高興就劈他。" }
+            ]
+        },
+        bastonn: {
+            name: "巴斯托恩．血顎", role: "狼裔戰士 (Bastonn Bloodjaw)", image: "images/bastonn.webp",
+            stats: { STR: 18, CON: 17, AGL: 14, INT: 11, WIL: 13, CHA: 7 },
+            backstory: [
+                { name: "弱點：貪吃", desc: "你不會放過任何吃東西的機會。<br><strong>扮演提示：</strong>經常抱怨肚子餓，對奇怪的肉也很有興趣。" },
+                { name: "背景：來自荒原", desc: "你來自北方荒地，四處尋求工作、歡樂與更美好的生活。你厭倦了部落的紛爭，懷著更宏大的夢想踏上南行之路。你曾經當過傭兵、角鬥士和商隊護衛，最後加入了一支探險隊。如今你們正前往迷霧之谷，渴望見識傳聞中的惡魔、怪物與強大敵人。" }
+            ],
+            skills: ["矛", "劍", "斧", "體操", "隱匿", "遊說"],
+            heroAbilities: [
+                { name: "狩獵本能", desc: "你可以標記一個獵物。你可以追蹤它的氣味一整天，並在攻擊它時獲得優勢。" },
+                { name: "快速恢復", desc: "你在短休時可以額外恢復 1D6 HP。" },
+                { name: "強力一擊", desc: "當你使用雙手近戰武器進行攻擊且命中敵人時，你會額外造成 1D8 傷害，但你在該輪無法進行移動。" }
+            ],
+            gear: [
+                { name: "長矛", icon: "images/spear.webp", desc: "簡單粗暴的武器，適合刺穿敵人。" },
+                { name: "鑲釘皮甲", icon: "images/leather.webp", desc: "充滿戰鬥痕跡的護甲。" }
+            ]
+        },
+        krisanna: {
+            name: "大膽的克莉桑納", role: "半身人盜賊 (Krisanna the Bold)", image: "images/krisanna.webp",
+            stats: { STR: 8, CON: 13, AGL: 18, INT: 14, WIL: 15, CHA: 10 },
+            backstory: [
+                { name: "弱點：魯莽", desc: "做事總是不考慮後果。<br><strong>扮演提示：</strong>看到寶箱先開了再說，陷阱什麼的以後再煩惱。" },
+                { name: "背景：街頭智慧", desc: "你在西方的城市長大，在巷弄間冒險，總是能想出瘋狂的點子挑戰朋友。你成為了熟練的扒手。曾在潛入豪宅時被捕入獄，但不久後就逃脫了。如今你遠離城市，與一群冒險者尋找新的挑戰和體驗。你們的下一個目標，是傳說中充滿謎團的迷霧之谷。" }
+            ],
+            skills: ["小刀", "隱匿", "巧手", "察覺", "調查", "體操", "閃避", "欺瞞"],
+            heroAbilities: [
+                { name: "動如脫兔", desc: "進行閃避 (EVADE) 檢定時，你可以獲得優勢。" },
+                { name: "迅捷步法", desc: "你可以在不消耗該輪動作的情況下嘗試閃避一次攻擊。" },
+                { name: "背刺 (Backstabbing)", desc: "攻擊一名正與盟友交戰的敵人時，你的攻擊視為偷襲（無法閃避/格擋），且傷害骰數增加一倍。" }
+            ],
+            gear: [
+                { name: "精緻匕首", icon: "images/dagger.webp", desc: "鋒利且便於隱藏。" },
+                { name: "開鎖工具", icon: "images/lockpicks.webp", desc: "你最信任的夥伴。" }
+            ]
+        },
+        alberic: {
+            name: "奧貝里克．亮心", role: "矮人商人 (Alberic Gleamheart)", image: "images/alberic.webp",
+            stats: { STR: 10, CON: 14, AGL: 13, INT: 14, WIL: 11, CHA: 17 },
+            backstory: [
+                { name: "弱點：虛榮", desc: "你非常享受他人的讚美與奉承。<br><strong>扮演提示：</strong>只要誇你兩句，你就容易答應別人的請求。" },
+                { name: "背景：家族使命", desc: "從小，父親就說你和兄弟姐妹都有各自的人生使命。你們每人都獲得一筆創業資金，投身於不同的商業領域。你選擇了古董和文物的買賣，但會把最上等的貨帶回家給父親。由於他永遠不滿足，你只能不斷踏上越來越危險的旅程。" }
+            ],
+            skills: ["交易", "察覺", "遊說", "隱匿", "弩", "祕聞傳說"],
+            heroAbilities: [
+                { name: "刻骨銘心", desc: "攻擊曾經傷害過你的敵人時，你獲得優勢。矮人從不忘記仇恨。" },
+                { name: "察言觀色", desc: "在你與另一個人的談話中，你可以進行察覺檢定來辨識對方是否在說謊。但你無法得知確切的謊言。" },
+                { name: "尋寶獵人", desc: "在岔路口或抉擇點，你可以憑直覺感知最有價值的寶藏方向。" }
+            ],
+            gear: [
+                { name: "輕弩", icon: "images/crossbow.webp", desc: "適合不喜歡弄髒手的文明人。" },
+                { name: "商人的提燈", icon: "images/lantern.webp", desc: "照亮黑暗，也照亮黃金。" }
+            ]
+        },
+        betrix: {
+            name: "貝崔絲．遠帆船長", role: "人類水手 (Captain Betrix Farsail)", image: "images/betrix.webp",
+            stats: { STR: 14, CON: 12, AGL: 15, INT: 12, WIL: 16, CHA: 11 },
+            backstory: [
+                { name: "弱點：專橫", desc: "你習慣指揮他人，這在陸地上有時很討人厭。<br><strong>扮演提示：</strong>把隊友當船員使喚，即使現在在爬山。" },
+                { name: "背景：失船的船長", desc: "你曾指揮一艘壯麗的輕快帆船，在海難中倖存下來，在南方叢林蹣跚前行，尋求復仇、榮耀與財富。如今你以冒險者的身分生活，試圖賺取足夠的金幣購買一艘新船，揚帆駛向地平線彼端的新發現與新冒險。" }
+            ],
+            skills: ["劍", "體操", "船藝", "察覺", "游泳", "閃避", "巧手", "欺瞞"],
+            heroAbilities: [
+                { name: "通權達變", desc: "進行技能檢定時，你可以選擇用另一個技能代替原本的技能進行檢定。<br>你必須能合理化解釋為何使用該替代技能。GM 擁有最終裁定權。" },
+                { name: "戰吼", desc: "以一個動作，你可以大聲戰吼來激勵盟友。聽得見你的所有其他 PC 都立刻移除 1 個狀態（自選）。<br>此能力只能在戰鬥中使用。" },
+                { name: "親水泳將", desc: "當你處於至少及腰的水中時，你可以發動此能力讓你的游泳檢定獲得 1 個優勢。" }
+            ],
+            gear: [
+                { name: "彎刀", icon: "images/scimitar.webp", desc: "帶有鏽跡但依然鋒利的海盜彎刀。" },
+                { name: "望遠鏡", icon: "images/spyglass.webp", desc: "雖然在塔裡可能用不到，但帶著它讓你安心。" }
+            ]
+        }
+    };
+
+    function openModal(charKey) {
+        const data = characters[charKey];
+        if (!data) return;
+        document.getElementById('modalName').innerText = data.name;
+        document.getElementById('modalRole').innerText = data.role;
+        document.getElementById('statSTR').innerText = data.stats.STR;
+        document.getElementById('statCON').innerText = data.stats.CON;
+        document.getElementById('statAGL').innerText = data.stats.AGL;
+        document.getElementById('statINT').innerText = data.stats.INT;
+        document.getElementById('statWIL').innerText = data.stats.WIL;
+        document.getElementById('statCHA').innerText = data.stats.CHA;
+        // 這裡需要真實圖片路徑，否則會是黑的
+        document.getElementById('modalImage').style.backgroundImage = `url('${data.image}')`;
+
+        createInteractiveList('backstoryContainer', data.backstory);
+        
+        const skillsContainer = document.getElementById('modalSkills');
+        skillsContainer.innerHTML = '';
+        if (data.skills) data.skills.forEach(skill => {
+            const tag = document.createElement('span'); tag.className = 'skill-tag'; tag.innerText = skill; skillsContainer.appendChild(tag);
+        });
+
+        createInteractiveList('heroAbilitiesContainer', data.heroAbilities);
+
+        // --- 找到這一段並替換 ---
+        const gearContainer = document.getElementById('modalGearContainer');
+        gearContainer.innerHTML = '';
+        if (data.gear) data.gear.forEach(item => {
+            // 改為生成純文字卡片
+            const div = document.createElement('div');
+            div.className = 'gear-text-card';
+            div.innerHTML = `
+                <span class="gear-name-text">${item.name}</span>
+                <span class="gear-desc-text">${item.desc}</span>
+            `;
+            gearContainer.appendChild(div);
+        });
+        // -----------------------
+        const modal = document.getElementById('charModal');
+        modal.style.display = 'flex';
+        setTimeout(() => { modal.classList.add('active'); }, 10);
+        document.body.style.overflow = 'hidden';
+    }
+
+    function createInteractiveList(containerId, dataArray) {
+        const container = document.getElementById(containerId);
+        container.innerHTML = ''; 
+        if (dataArray) dataArray.forEach((item) => {
+            const wrapper = document.createElement('div'); wrapper.className = 'ability-wrapper';
+            const btn = document.createElement('button'); btn.className = 'ability-btn';
+            btn.innerHTML = `${item.name} <span class="ability-indicator">+</span>`;
+            btn.onclick = function() { 
+                this.classList.toggle('active'); 
+                const content = this.nextElementSibling; 
+                content.classList.toggle('active');
+                if(content.style.maxHeight){ content.style.maxHeight = null; this.querySelector('.ability-indicator').innerText='+'; }
+                else { content.style.maxHeight = content.scrollHeight + "px"; this.querySelector('.ability-indicator').innerText='×'; }
+            };
+            const content = document.createElement('div'); content.className = 'ability-content';
+            content.innerHTML = `<p>${item.desc}</p>`;
+            wrapper.appendChild(btn); wrapper.appendChild(content); container.appendChild(wrapper);
+        });
+    }
+
+    function closeModal(event) {
+        const modal = document.getElementById('charModal');
+        modal.classList.remove('active');
+        setTimeout(() => { modal.style.display = 'none'; }, 300);
+        document.body.style.overflow = 'auto';
+    }
+
+    /* 粒子效果 Canvas */
+    const canvas = document.getElementById('dustCanvas'); const ctx = canvas.getContext('2d');
+    function resizeCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+    window.addEventListener('resize', resizeCanvas); resizeCanvas();
+    let particles = [];
+    for(let i=0; i<100; i++) particles.push({x:Math.random()*canvas.width, y:Math.random()*canvas.height, size:Math.random()*2, speedY:Math.random()*0.5});
+    function animateParticles(){ 
+        ctx.clearRect(0,0,canvas.width,canvas.height); 
+        ctx.fillStyle='rgba(200,200,200,0.15)'; // 改為灰白色塵埃
+        particles.forEach(p=>{ 
+            p.y+=p.speedY; 
+            if(p.y>canvas.height)p.y=0; 
+            ctx.beginPath(); 
+            ctx.arc(p.x,p.y,p.size,0,Math.PI*2); 
+            ctx.fill(); 
+        }); 
+        requestAnimationFrame(animateParticles); 
+    }
+    animateParticles();
+</script>
+</body>
+</html>
