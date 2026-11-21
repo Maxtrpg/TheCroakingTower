@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>鴉啼之塔 | Dragonbane</title>
+    <title>黑鋼裂隙的古幣 | Dragonbane</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -13,7 +13,7 @@
         /* --- 1. 基礎設定 --- */
         :root {
             --obsidian: #05070a; /* 更偏冷色調的黑 */
-            --raven: #2c3e50;    /* 渡鴉羽毛的深藍灰 */
+            --raven: #2c3e50;    /* 深藍灰 */
             --mist: #7f8c8d;     /* 迷霧灰 */
             --gold: #d4af37;
             --gold-bright: #f4d078;
@@ -25,7 +25,6 @@
         body {
             margin: 0; padding: 0;
             background-color: var(--obsidian);
-            /* 背景紋理改為類似石磚或迷霧的感覺 */
             background-image: radial-gradient(circle at 50% 50%, transparent 20%, #000 90%), url('https://www.transparenttextures.com/patterns/black-felt.png'); 
             background-repeat: repeat; background-attachment: fixed;
             color: var(--text-light);
@@ -104,7 +103,7 @@
         /* Header */
         header {
             min-height: 100vh; padding: 80px 20px;
-            /* 背景圖建議換成古塔或迷霧山谷 */
+            /* 背景圖建議可替換為黑鋼山脈或火山裂隙圖片 */
             background: linear-gradient(to bottom, rgba(5,7,10,0.6), rgba(5,7,10,0.4), var(--obsidian)), url('images/tower_bg.webp');
             background-size: cover; background-position: center bottom; background-attachment: scroll;
             display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;
@@ -135,7 +134,7 @@
         .header-story-box:hover { box-shadow: 0 0 40px rgba(44, 62, 80, 0.5); border-color: var(--raven); }
         .story-text { font-size: 1.15rem; color: #ccc; margin-bottom: 20px; text-align: justify; text-align-last: center; }
         .story-highlight { color: var(--gold); font-weight: bold; }
-        .story-omen { color: #a4b0be; font-style: italic; border-left: 3px solid var(--raven); padding-left: 15px; margin-top: 20px; display: block; }
+        .story-omen { color: #a4b0be; font-style: italic; border-left: 3px solid var(--raven); padding-left: 15px; margin-top: 20px; display: block; text-align: left; }
 
         /* 導覽列 */
         .nav-container { position: absolute; bottom: 0; width: 100%; display: flex; justify-content: center; gap: 0; background: linear-gradient(to top, rgba(0,0,0,0.9), transparent); z-index: 20; }
@@ -232,7 +231,7 @@
         .ability-content p { padding: 15px; margin: 0; color: #ccc; font-size: 0.95rem; font-style: normal; }
         .ability-content.active { max-height: 600px; opacity: 1; }
         
-       /* --- 修改後的裝備欄 (純文字版) --- */
+        /* --- 裝備欄 (純文字版) --- */
         .gear-container { 
             display: grid; 
             grid-template-columns: 1fr; 
@@ -241,7 +240,6 @@
             margin-bottom: 30px; 
         }
         
-        /* 在電腦版顯示雙欄，手機版單欄 */
         @media (min-width: 768px) {
             .gear-container { grid-template-columns: 1fr 1fr; }
         }
@@ -249,7 +247,7 @@
         .gear-text-card {
             background: linear-gradient(135deg, rgba(20, 30, 40, 0.4), rgba(10, 15, 20, 0.6));
             border: 1px solid #34495e;
-            border-left: 3px solid var(--gold); /* 金色左邊框呼應設計語言 */
+            border-left: 3px solid var(--gold);
             padding: 15px 20px;
             border-radius: 2px;
             transition: all 0.3s ease;
@@ -302,28 +300,25 @@
             </div>
         </div>
 
-        <p style="letter-spacing: 3px; font-size: 0.8rem; color: var(--text-dim); position: relative; z-index: 10;">Dragonbane | 迷霧山谷序章</p>
-        <h1 style="position: relative; z-index: 10;">鴉啼之塔</h1>
-        <p class="subtitle">The Croaking Tower</p>
+        <p style="letter-spacing: 3px; font-size: 0.8rem; color: var(--text-dim); position: relative; z-index: 10;">Dragonbane | 黑鋼山脈序章</p>
+        <h1 style="position: relative; z-index: 10;">黑鋼裂隙的古幣</h1>
+        <p class="subtitle">Coins of the Blacksteel Rift</p>
         
         <div class="divider-container">
             <div class="divider-line"></div><div class="divider-gem">◆</div><div class="divider-line"></div>
         </div>
         
- <div class="header-story-box">
+        <div class="header-story-box">
             <p class="story-text">
-                在庫默爾山脈的南端，德拉克馬山口之前，矗立著一座被遺忘的古塔。
-                人們稱之為<span class="story-highlight">鴉啼之塔</span>。
+                幾個世紀以來，碧水鎮的酒館裡總是流傳著關於<span class="story-highlight">黑鋼山脈</span>地底矮人要塞與失落寶庫的傳說。
+                直到最近一場劇烈的山崩與地震，在黑色火山岩壁上撕開了一道深不見底的裂隙，露出了塵封已久的矮人石柱門廊。
             </p>
             <p class="story-text">
-               它是昔日巨龍帝國留下的遺跡，孤獨地守望著通往迷霧山谷的古道。
-                如今，艾默瑞斯騎士發出了一份委託——
-               前往這座廢棄的高塔，取回一枚失落已久的護身符。
+                飽讀詩書的鴨人學者<span class="story-highlight">阿奇博爾德</span>，日前冒險從裂口邊緣帶回了一枚印有滅亡王國徽記的古老金幣。
+                為了搶在消息走漏前拓印要塞內的失落銘文，他決定雇用你們同行護衛，並承諾只取走十分之一的財寶作為研究路費。
             </p>
             <div class="story-omen">
-                看似簡單的任務，卻伴隨著詭異的傳聞。
-                旅行者說，塔的周圍迴盪著不祥的嘶啞鳴叫，
-                彷彿連風中都夾雜著來自遠古的警告……
+                地底吹出的微風帶著鐵鏽與硫磺的氣息——你們準備好點燃火把，踏入這座被時光遺忘的黑鋼迷宮了嗎？
             </div>
         </div>
 
@@ -335,49 +330,49 @@
 
     <div class="content-wrapper">
         
- <div id="tab-lore" class="tab-content active">
+        <div id="tab-lore" class="tab-content active">
             <section class="lore-section">
                 <div class="lore-container">
                     <div class="lore-title-group">
-                        <h2 class="lore-main-title">帝國的餘燼</h2>
-                        <p class="lore-sub-title">Echoes of the Dragon Empire</p>
+                        <h2 class="lore-main-title">地脈的餘燼</h2>
+                        <p class="lore-sub-title">Echoes of the Blacksteel Dwarves</p>
                         <div class="divider-container" style="width: 20%;"><div class="divider-line"></div><div class="divider-gem">◆</div><div class="divider-line"></div></div>
                     </div>
 
                     <div class="lore-box">
-                        <h3 class="lore-h3">失落的巨龍帝國</h3>
+                        <h3 class="lore-h3">失落的黑鋼矮人</h3>
                         <p class="lore-text">
-                            在久遠的過去，迷霧山谷曾由巨龍帝國的龍皇<strong style="color:var(--gold);">埃勒丹 (Eledain)</strong> 統治。那是傳說中的黃金時代，巨龍並非野獸，而是帝國的守護者與盟友。騎士們騎乘著巨龍翱翔天際，魔法與鋼鐵共同鑄造了無上的輝煌。
+                            數百年前，黑鋼山脈曾屬於技藝超群的<strong style="color:var(--gold);">黑鋼矮人 (Blacksteel Dwarves)</strong>。他們沿著峭壁開鑿通途，並深入地底建造了引導地熱運轉的宏偉堡壘。
                         </p>
                         <p class="lore-text">
-                            然而，帝國因未知的黑暗而崩塌，埃勒丹的血脈斷絕，曾經的榮耀化為廢墟。世界陷入混亂，而帝國的核心領土則被一層無法穿越的魔法迷霧所吞噬。
+                            然而，隨著黑鋼矮人神祕地從這片山脈絕跡，無數要塞在一連串的火山噴發、塌方與封印大門後徹底消失於世人眼前，只留下令尋寶獵人垂涎的傳說。
                         </p>
                     </div>
 
                     <div class="lore-box">
-                        <h3 class="lore-h3">迷霧山谷的呼喚</h3>
+                        <h3 class="lore-h3">碧水鎮的傳聞</h3>
                         <p class="lore-text">
-                            數百年來，<span class="lore-highlight">迷霧山谷 (The Misty Vale)</span> 一直是地圖上的禁地。傳說那裡埋藏著巨龍帝國最後的寶藏、強大的神器，以及關於帝國隕落的真相。
+                            位於山腳下的<span class="lore-highlight">碧水鎮 (Cragfall)</span>，世世代代流傳著地底深處藏有龐大寶庫的故事。過去無數尋寶隊伍無功而返，帶回的往往只有生鏽的工具與空蕩蕩的石室。
                         </p>
                         <p class="lore-text">
-                            如今，籠罩山谷的迷霧開始變得不穩定，通往內部的路徑隱約浮現。來自世界各地的冒險者、尋寶獵人和流亡者紛紛聚集於此，渴望在這片危險與機遇並存的土地上，刻下自己的傳奇。
+                            直到數日前，一場猛烈的地殼震動撕裂了距離小鎮數小時路程的火山岩壁，塵封兩百年的黑鋼石砌門廊終於重見天日。
                         </p>
                     </div>
 
                     <div class="lore-box" style="grid-column: 1 / -1;">
-                        <h3 class="lore-h3">守望者：鴉啼之塔</h3>
+                        <h3 class="lore-h3">學者阿奇博爾德的委託</h3>
                         <p class="lore-text">
-                            在庫默爾山脈的陰影下，矗立著一座帝國時代的遺跡——<strong>鴉啼之塔</strong>。它曾是守望德拉克馬山口的要塞，如今卻被藤蔓與歲月侵蝕。
+                            鴨人學者<strong>阿奇博爾德．羽墨</strong>在裂縫邊緣拾獲了一枚被高溫焦灼的古代金幣，證實了傳說並非空穴來風。他對金銀財寶興趣缺缺，真正令他著迷的是要塞中失落的矮人銘文與建築紀錄。
                         </p>
                         <p class="lore-text">
-                            艾默瑞斯騎士相信，這座塔中遺留著一把「鑰匙」或是一件信物，那是深入迷霧山谷不可或缺的憑證。對於你們這群渴望進入山谷的冒險者來說，征服這座古塔，不僅是為了騎士的賞金，更是踏入傳說的第一步試煉。
+                            自知手無縛雞之力的阿奇博爾德，決定親自隨行提供歷史與工藝指引，並雇用你們擔任護衛。這不僅是一趟輕鬆的「十分之九分紅」尋寶之旅，更是揭開黑鋼山脈地底秘密的絕佳契機。
                         </p>
                     </div>
 
                     <div class="lore-quote">
-                        「迷霧不會寬恕弱者。在挑戰山谷之前，先證明你們有資格跨過它的門檻。」
+                        「我只要拓印那些古老的矮人石刻，地底下的黃金與寶石全歸你們——只要你們能保住我的羽毛不被烤焦！」
                         <br>
-                        <span style="font-size: 0.9rem; color: #888; font-family: 'Crimson Pro', serif; margin-top:10px; display:block;">—— 郊外村的老兵</span>
+                        <span style="font-size: 0.9rem; color: #888; font-family: 'Crimson Pro', serif; margin-top:10px; display:block;">—— 鴨人學者 阿奇博爾德．羽墨</span>
                     </div>
 
                 </div>
@@ -390,7 +385,7 @@
                 <p class="char-intro-subtitle">The Party</p>
                 <div class="divider-container" style="width: 15%; margin: 15px auto;"><div class="divider-line"></div><div class="divider-gem">◆</div><div class="divider-line"></div></div>
                 <p class="char-intro-desc">
-                    七位懷抱不同目的冒險者，命運將他們匯聚於古塔之下。
+                    七位懷抱不同目的的冒險者，受雇於峭壁瀑布鎮，共同踏入黑鋼山脈的裂隙。
                 </p>
             </div>
 
@@ -452,9 +447,9 @@
     </div>
 
     <footer>
-        <a href="#" class="cta-btn">開始冒險</a>
+        <a href="#" class="cta-btn">點燃火把</a>
         <br><br><br>
-        <p>&copy; 2025 The Croaking Tower. Powered by Dragonbane System.</p>
+        <p>&copy; 2026 Coins of the Blacksteel Rift. Powered by Dragonbane System.</p>
     </footer>
 
     <div id="charModal" class="modal-overlay" onclick="closeModal(event)">
@@ -510,7 +505,7 @@
             stats: { STR: 8, CON: 11, AGL: 9, INT: 16, WIL: 18, CHA: 14 },
             backstory: [
                 { name: "弱點：怯懦", desc: "你總是待在隊伍的最後面。雖然魔法強大，但肉體凡胎讓你對受傷感到恐懼。<br><strong>扮演參考：</strong>遇到危險時，先找掩護，再搓火球。" },
-                { name: "背景：被燒毀的穀倉", desc: "你從小你就對火焰非常著迷。在意外燒毀家庭農場後，具有魔法天賦的母親將你送進魔法學院。在那裡，你學會了魔法的奧祕，但你仍然渴望更深層的知識。如今，在經過數年旅行後，你加入了一支探險隊，出發前往迷霧之谷。" }
+                { name: "背景：被燒毀的穀倉", desc: "你從小就對火焰非常著迷。在意外燒毀家庭農場後，具有魔法天賦的母親將你送進魔法學院。在那裡，你學會了魔法的奧祕，但你仍然渴望更深層的知識。如今，在經過數年旅行後，你來到了峭壁瀑布鎮，接下了探索黑鋼山脈古遺跡的委託。" }
             ],
             skills: ["元素流派", "祕聞傳說", "語言", "察覺", "求生", "調查", "醫療", "野獸知識"],
             heroAbilities: [
@@ -530,7 +525,7 @@
             stats: { STR: 13, CON: 15, AGL: 17, INT: 13, WIL: 10, CHA: 9 },
             backstory: [
                 { name: "弱點：偏執", desc: "你堅信夜裔（如歐克、哥布林）是邪惡的，必須被消滅。<br><strong>扮演提示：</strong>對非自然或黑暗生物表現出明顯的不信任與敵意。" },
-                { name: "背景：尋找宿命", desc: "你在南方的熱帶雨林長大，總是渴望冒險，但也明白家族對紀律和反思的重視。某天，一隻巨魔襲擊了你的村莊，殺害了你的族人。此後，你決定為自己尋找新的未來和命運。於是你與一群同伴踏上旅程，前往迷霧之谷，看看那裡會帶來什麼機會。" }
+                { name: "背景：尋找宿命", desc: "你在南方的熱帶雨林長大，總是渴望冒險，但也明白家族對紀律和反思的重視。某天，一隻巨魔襲擊了你的村莊，殺害了你的族人。此後，你決定為自己尋找新的未來和命運。於是你與一群同伴踏上旅程，來到黑鋼山脈腳下，看看地底的裂隙會帶來什麼機會。" }
             ],
             skills: ["弓", "察覺", "閃避", "狩獵", "體操", "小刀"],
             heroAbilities: [
@@ -548,7 +543,7 @@
             stats: { STR: 16, CON: 16, AGL: 10, INT: 12, WIL: 14, CHA: 13 },
             backstory: [
                 { name: "弱點：魯莽", desc: "你總是第一個衝進危險之中。<br><strong>扮演提示：</strong>思考？那是法師的事。看到敵人，衝就對了！" },
-                { name: "背景：次子的榮耀", desc: "你是半灣男爵最小的兒子，父親的宅邸位於遙遠的東方。爵位將由兄長繼承，因此你決定走出自己的道路。你仍對家族的名譽和榮耀感到驕傲，經常幫助弱者、懲罰邪惡。如今，你加入了一支探險隊，被迷霧之谷的傳說和寶藏所吸引。" }
+                { name: "背景：次子的榮耀", desc: "你是半灣男爵最小的兒子，父親的宅邸位於遙遠的東方。爵位將由兄長繼承，因此你決定走出自己的道路。你仍對家族的名譽和榮耀感到驕傲，經常幫助弱者、懲罰邪惡。如今，被同族學者阿奇博爾德的熱情與地底寶藏傳說所吸引，你接下了這份護衛工作。" }
             ],
             skills: ["劍", "斧", "徒手", "祕聞傳說", "遊說", "表演"],
             heroAbilities: [
@@ -567,7 +562,7 @@
             stats: { STR: 18, CON: 17, AGL: 14, INT: 11, WIL: 13, CHA: 7 },
             backstory: [
                 { name: "弱點：貪吃", desc: "你不會放過任何吃東西的機會。<br><strong>扮演提示：</strong>經常抱怨肚子餓，對奇怪的肉也很有興趣。" },
-                { name: "背景：來自荒原", desc: "你來自北方荒地，四處尋求工作、歡樂與更美好的生活。你厭倦了部落的紛爭，懷著更宏大的夢想踏上南行之路。你曾經當過傭兵、角鬥士和商隊護衛，最後加入了一支探險隊。如今你們正前往迷霧之谷，渴望見識傳聞中的惡魔、怪物與強大敵人。" }
+                { name: "背景：來自荒原", desc: "你來自北方荒地，四處尋求工作、歡樂與更美好的生活。你厭倦了部落的紛爭，懷著更宏大的夢想踏上南行之路。你曾經當過傭兵、角鬥士和商隊護衛，最後在峭壁瀑布鎮加入了一支探險隊。如今你們正準備深入黑鋼山脈的裂縫，渴望見識地底的未知挑戰。" }
             ],
             skills: ["矛", "劍", "斧", "體操", "隱匿", "遊說"],
             heroAbilities: [
@@ -585,7 +580,7 @@
             stats: { STR: 8, CON: 13, AGL: 18, INT: 14, WIL: 15, CHA: 10 },
             backstory: [
                 { name: "弱點：魯莽", desc: "做事總是不考慮後果。<br><strong>扮演提示：</strong>看到寶箱先開了再說，陷阱什麼的以後再煩惱。" },
-                { name: "背景：街頭智慧", desc: "你在西方的城市長大，在巷弄間冒險，總是能想出瘋狂的點子挑戰朋友。你成為了熟練的扒手。曾在潛入豪宅時被捕入獄，但不久後就逃脫了。如今你遠離城市，與一群冒險者尋找新的挑戰和體驗。你們的下一個目標，是傳說中充滿謎團的迷霧之谷。" }
+                { name: "背景：街頭智慧", desc: "你在西方的城市長大，在巷弄間冒險，總是能想出瘋狂的點子挑戰朋友。你成為了熟練的扒手。曾在潛入豪宅時被捕入獄，但不久後就逃脫了。如今你遠離城市，與一群冒險者尋找新的挑戰與財富。你們的下一個目標，是剛被地震震開的黑鋼矮人寶庫。" }
             ],
             skills: ["小刀", "隱匿", "巧手", "察覺", "調查", "體操", "閃避", "欺瞞"],
             heroAbilities: [
@@ -603,7 +598,7 @@
             stats: { STR: 10, CON: 14, AGL: 13, INT: 14, WIL: 11, CHA: 17 },
             backstory: [
                 { name: "弱點：虛榮", desc: "你非常享受他人的讚美與奉承。<br><strong>扮演提示：</strong>只要誇你兩句，你就容易答應別人的請求。" },
-                { name: "背景：家族使命", desc: "從小，父親就說你和兄弟姐妹都有各自的人生使命。你們每人都獲得一筆創業資金，投身於不同的商業領域。你選擇了古董和文物的買賣，但會把最上等的貨帶回家給父親。由於他永遠不滿足，你只能不斷踏上越來越危險的旅程。" }
+                { name: "背景：家族使命", desc: "從小，父親就說你和兄弟姐妹都有各自的人生使命。你們每人都獲得一筆創業資金，投身於不同的商業領域。你選擇了古董和文物的買賣，但會把最上等的貨帶回家給父親。聽聞失落已久的「黑鋼矮人」遺跡重現人間，你立刻動身前往，誓言帶回最珍貴的矮人遺產。" }
             ],
             skills: ["交易", "察覺", "遊說", "隱匿", "弩", "祕聞傳說"],
             heroAbilities: [
@@ -620,8 +615,8 @@
             name: "貝崔絲．遠帆船長", role: "人類水手 (Captain Betrix Farsail)", image: "images/betrix.webp",
             stats: { STR: 14, CON: 12, AGL: 15, INT: 12, WIL: 16, CHA: 11 },
             backstory: [
-                { name: "弱點：專橫", desc: "你習慣指揮他人，這在陸地上有時很討人厭。<br><strong>扮演提示：</strong>把隊友當船員使喚，即使現在在爬山。" },
-                { name: "背景：失船的船長", desc: "你曾指揮一艘壯麗的輕快帆船，在海難中倖存下來，在南方叢林蹣跚前行，尋求復仇、榮耀與財富。如今你以冒險者的身分生活，試圖賺取足夠的金幣購買一艘新船，揚帆駛向地平線彼端的新發現與新冒險。" }
+                { name: "弱點：專橫", desc: "你習慣指揮他人，這在陸地上有時很討人厭。<br><strong>扮演提示：</strong>把隊友當船員使喚，即使現在在鑽地洞。" },
+                { name: "背景：失船的船長", desc: "你曾指揮一艘壯麗的輕快帆船，在海難中倖存下來，在南方叢林蹣跚前行，尋求復仇、榮耀與財富。如今你以冒險者的身分生活，聽聞黑鋼山脈傳來寶藏的消息便趕來此地，試圖賺取足夠的金幣購買一艘新船，揚帆駛向地平線彼端的新發現與新冒險。" }
             ],
             skills: ["劍", "體操", "船藝", "察覺", "游泳", "閃避", "巧手", "欺瞞"],
             heroAbilities: [
@@ -631,7 +626,7 @@
             ],
             gear: [
                 { name: "彎刀", icon: "images/scimitar.webp", desc: "帶有鏽跡但依然鋒利的海盜彎刀。" },
-                { name: "望遠鏡", icon: "images/spyglass.webp", desc: "雖然在塔裡可能用不到，但帶著它讓你安心。" }
+                { name: "望遠鏡", icon: "images/spyglass.webp", desc: "雖然在地底要塞裡可能用不到，但帶著它讓你安心。" }
             ]
         }
     };
@@ -647,7 +642,6 @@
         document.getElementById('statINT').innerText = data.stats.INT;
         document.getElementById('statWIL').innerText = data.stats.WIL;
         document.getElementById('statCHA').innerText = data.stats.CHA;
-        // 這裡需要真實圖片路徑，否則會是黑的
         document.getElementById('modalImage').style.backgroundImage = `url('${data.image}')`;
 
         createInteractiveList('backstoryContainer', data.backstory);
@@ -660,11 +654,9 @@
 
         createInteractiveList('heroAbilitiesContainer', data.heroAbilities);
 
-        // --- 找到這一段並替換 ---
         const gearContainer = document.getElementById('modalGearContainer');
         gearContainer.innerHTML = '';
         if (data.gear) data.gear.forEach(item => {
-            // 改為生成純文字卡片
             const div = document.createElement('div');
             div.className = 'gear-text-card';
             div.innerHTML = `
@@ -673,7 +665,7 @@
             `;
             gearContainer.appendChild(div);
         });
-        // -----------------------
+
         const modal = document.getElementById('charModal');
         modal.style.display = 'flex';
         setTimeout(() => { modal.classList.add('active'); }, 10);
@@ -715,7 +707,7 @@
     for(let i=0; i<100; i++) particles.push({x:Math.random()*canvas.width, y:Math.random()*canvas.height, size:Math.random()*2, speedY:Math.random()*0.5});
     function animateParticles(){ 
         ctx.clearRect(0,0,canvas.width,canvas.height); 
-        ctx.fillStyle='rgba(200,200,200,0.15)'; // 改為灰白色塵埃
+        ctx.fillStyle='rgba(200,200,200,0.15)';
         particles.forEach(p=>{ 
             p.y+=p.speedY; 
             if(p.y>canvas.height)p.y=0; 
@@ -728,5 +720,4 @@
     animateParticles();
 </script>
 </body>
-
 </html>
